@@ -24,7 +24,7 @@ def match():
         fp = tempfile.NamedTemporaryFile()
         file.save(fp)
 
-        locations, descriptors = extract(fp.name)
+        locations, descriptors = list(extract([fp.name]))[0]
 
         res = match_features(Feature(locations, descriptors), haystack)
 

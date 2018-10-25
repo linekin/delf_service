@@ -1,5 +1,4 @@
 import logging
-import time
 from collections import namedtuple
 
 import numpy as np
@@ -60,7 +59,7 @@ def match(locations_1, descriptors_1, locations_2, descriptors_2):
         residual_threshold=20,
         max_trials=1000)
 
-    return sum(inliers)
+    return sum(inliers) if inliers is not None else 0
 
 
 def load_features(features_dir):
@@ -75,10 +74,10 @@ def load_features(features_dir):
     return features
 
 
-def extract(filename):
+def extract(image_paths):
     tf.logging.set_verbosity(tf.logging.INFO)
 
-    image_paths = [filename]
+    num_images = len(image_paths)
 
     # Parse DelfConfig proto.
     config = delf_config_pb2.DelfConfig()
@@ -120,28 +119,28 @@ def extract(filename):
             # Start input enqueue threads.
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-            start = time.clock()
 
-            # # Get next image.
-            im = sess.run(image_tf)
+            for i in range(num_images):
+                # # Get next image.
+                im = sess.run(image_tf)
 
-            # Extract and save features.
-            (locations_out, descriptors_out, feature_scales_out,
-             attention_out) = sess.run(
-                [locations, descriptors, feature_scales, attention],
-                feed_dict={
-                    input_image:
-                        im,
-                    input_score_threshold:
-                        config.delf_local_config.score_threshold,
-                    input_image_scales:
-                        list(config.image_scales),
-                    input_max_feature_num:
-                        config.delf_local_config.max_feature_num
-                })
+                # Extract and save features.
+                (locations_out, descriptors_out, feature_scales_out,
+                 attention_out) = sess.run(
+                    [locations, descriptors, feature_scales, attention],
+                    feed_dict={
+                        input_image:
+                            im,
+                        input_score_threshold:
+                            config.delf_local_config.score_threshold,
+                        input_image_scales:
+                            list(config.image_scales),
+                        input_max_feature_num:
+                            config.delf_local_config.max_feature_num
+                    })
+                yield Feature(locations_out, descriptors_out)
 
             # Finalize enqueue threads.
             coord.request_stop()
             coord.join(threads)
 
-            return locations_out, descriptors_out
