@@ -5,7 +5,7 @@ run service using docker
 
 call service using `httpie`
 
-`http localhost:5000/match file@test_images/`
+`http localhost:5000/match file@test_images/DRzCTyi.jpg`
 
 api url path is `/match`. 
 make sure the images file size is less than 1MB,
