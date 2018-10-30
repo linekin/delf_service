@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/linekin/delf_service.svg?branch=master)](https://travis-ci.org/linekin/delf_service)
 
 run service using docker
 
