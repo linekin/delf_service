@@ -5,7 +5,7 @@ RUN             apt-get update \
                     git \
                     wget \
              && pip3 install matplotlib \
-             && pip3 install scikit-image flask python-dotenv tablib
+             && pip3 install scikit-image flask python-dotenv tablib pytest
 
 WORKDIR /protoc
 RUN             apt-get install wget -y \

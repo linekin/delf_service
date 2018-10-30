@@ -1,0 +1,12 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+before_install:
+  - docker build -t linekin/delf_service .
+
+script:
+  - docker run linekin/delf_service /bin/sh -c 'cd /app; pytest'
